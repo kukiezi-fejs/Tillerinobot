@@ -13,12 +13,12 @@ import tillerino.tillerinobot.RecommendationsManager.Recommendation;
 
 public class Tsundere implements Language {
 	
-    //Random object, used in StringShuffler
+	//Random object, used in StringShuffler
 	static final Random rnd = new Random();
 	//Recent counters, reset if inactive for a while
-    int recentRecommendations = 0;
-    int recentHugs = 0;
-    
+	int recentRecommendations = 0;
+	int recentHugs = 0;
+	
 	StringShuffler welcomeUserShortShuffler = new StringShuffler(rnd);
 	StringShuffler welcomeUserShuffler = new StringShuffler(rnd);
 	StringShuffler welcomeUserLongShuffler = new StringShuffler(rnd);
@@ -34,7 +34,7 @@ public class Tsundere implements Language {
 				"It hasn't even been 5 minutes...",
 				"Today, " + username + " worked on their disappearing act."
 			);
-		} else if (inactiveTime < 4l * 24 * 60 * 60 * 1000) { 
+		} else if (inactiveTime < 4l * 24 * 60 * 60 * 1000) {
 			greeting = welcomeUserShuffler.get(
 				"Back again? I'm just here because I have nothing else to do! Don't read into it!",
 				"H-hey...",
@@ -54,15 +54,19 @@ public class Tsundere implements Language {
 		user.message(greeting);
 		//Recent counter reset (4 hours)
 		if (inactiveTime > 4 * 60 * 60 * 1000) {
-            recentRecommendations = 0;
-            recentHugs = 0;
+			recentRecommendations = 0;
+			recentHugs = 0;
 		}
-	}    
+
+		setChanged(true);
+	}
 
 	StringShuffler unknownBeatmapShuffler = new StringShuffler(rnd);
 
 	@Override
 	public String unknownBeatmap() {
+		setChanged(true);
+
 		return unknownBeatmapShuffler.get(
 			"Are you stupid? No one plays that map!",
 			"Oh, really? Never heard of it.",
@@ -86,6 +90,8 @@ public class Tsundere implements Language {
 	
 	@Override
 	public String noInformationForModsShort() {
+		setChanged(true);
+
 		return noInformationForModsShortShuffler.get(
 			"Those mods? You wish!",
 			"Mods? What mods?",
@@ -97,6 +103,8 @@ public class Tsundere implements Language {
 	
 	@Override
 	public String noInformationForMods() {
+		setChanged(true);
+
 		return noInformationForModsShuffler.get(
 			"What!? You can't possibly expect me to know the answer to that!",
 			"I'd tell you, but then I'd have to kill you.",
@@ -123,8 +131,10 @@ public class Tsundere implements Language {
 
 	@Override
 	public String tryWithMods() {
+		setChanged(true);
+
 		return tryWithModsShuffler.get(
-				"An idiot like you wouldn't know to try this with mods. You should thank me.",
+			"An idiot like you wouldn't know to try this with mods. You should thank me.",
 			"I almost think you could use mods here without making a complete fool of yourself.",
 			"You might be able to use mods other than NF here. But then again, it's you we're talking about."
 		);
@@ -134,6 +144,8 @@ public class Tsundere implements Language {
 	
 	@Override
 	public String tryWithMods(List<Mods> mods) {
+		setChanged(true);
+
 		String modnames = Mods.toShortNamesContinuous(mods);
 		return tryWithModsListShuffler.get(
 			"Use " + modnames + "... or else.",
@@ -154,6 +166,8 @@ public class Tsundere implements Language {
 	
 	@Override
 	public void hug(IRCBotUser user, OsuApiUser apiUser) {
+		setChanged(true);
+
 		//Responses move from tsun to dere with more hug attempts and recommendations
 		recentHugs++;
 		int baseLevel = (int)(Math.log(recentHugs) / Math.log(2.236) + Math.log(recentRecommendations) / Math.log(5)); //Sum logs base sqrt(5) and 5
@@ -221,7 +235,7 @@ public class Tsundere implements Language {
 		return "Really, every answer on this list should be intuitively obvious, but it's understandable if -you- need to read it: https://github.com/Tillerino/Tillerinobot/wiki/FAQ";
 	}
 
-	public String unknownRecommendationParameter(String param) {
+	public String unknownRecommendationParameter() {
 		String[] fakes = {
 			//CLUBS
 				"[http://osu.ppy.sh/b/80 Scatman John - Scatman [Insane]]   95%: 40pp | 98%: 43pp | 99%: 45pp | 100%: 48pp | 3:04 ★ 3.61 ♫ 136.02 AR4 ♣",
@@ -480,7 +494,7 @@ public class Tsundere implements Language {
 		};
 		return fakes[rnd.nextInt(fakes.length)];
 	}
-    
+
 	@Override
 	public String featureRankRestricted(String feature, int minRank, OsuApiUser user) {
 		return "Sorry, " + feature + " is only available for people that can actually play osu!. Passing rank " + minRank + " will work, not that you have any hope of ever getting there.";
@@ -502,7 +516,7 @@ public class Tsundere implements Language {
 	}
 
 	StringShuffler optionalCommentOnNPHardShuffler = new StringShuffler(rnd);
-	StringShuffler optionalCommentOnNPEasyShuffler = new StringShuffler(rnd);	
+	StringShuffler optionalCommentOnNPEasyShuffler = new StringShuffler(rnd);
 
 	@Override
 	public void optionalCommentOnNP(IRCBotUser user, OsuApiUser apiUser, BeatmapMeta meta) {
@@ -515,7 +529,7 @@ public class Tsundere implements Language {
 			user.message("Are you serious!? If that map doesn't kill you, I will.");
 		} else if (estimates.getPPForAcc(1) / typicalPP < 0.333) {
 			user.message("Playing that won't impress me much... n-n-not that I'd want you to.");
-        }
+		}
 	}
 	
 	@Override
@@ -535,6 +549,8 @@ public class Tsundere implements Language {
 	
 	@Override
 	public void optionalCommentOnRecommendation(IRCBotUser user, OsuApiUser apiUser, Recommendation meta) {
+		setChanged(true);
+
 		recentRecommendations++;
 		if(recentRecommendations == 7) {
 			user.message("I have lots of free time. I would never pick out maps just because I liked you... h-h-hypothetically speaking.");
@@ -565,6 +581,8 @@ public class Tsundere implements Language {
 	
 	@Override
 	public String invalidAccuracy(String acc) {
+		setChanged(true);
+
 		return invalidAccuracyShuffler.get(
 			"\"The first principle is that you must not fool yourself - and you are the easiest person to fool.\"",
 			"\"Success is the ability to go from one failure to another with no loss of enthusiasm.\"",
@@ -572,7 +590,7 @@ public class Tsundere implements Language {
 			"\"The only real mistake is the one from which we learn nothing.\"",
 			"\"Only two things are infinite, the universe and human stupidity, and I'm not sure about the former.\"",
 			"\"Sometimes a man wants to be stupid if it lets him do a thing his cleverness forbids.\"",
-			"\"Honestly, if you were any slower, you’d be going backward.\""
+						"\"Honestly, if you were any slower, you’d be going backward.\""
 		);
 	}
 
@@ -581,10 +599,12 @@ public class Tsundere implements Language {
 		return "I don't know. I'm not your personal genie. You probably don't even have a lamp for me!";
 	}
 
-	StringShuffler optionalCommentOnLanguageShuffler = new StringShuffler(rnd);	
+	StringShuffler optionalCommentOnLanguageShuffler = new StringShuffler(rnd);
 
 	@Override
 	public void optionalCommentOnLanguage(IRCBotUser user, OsuApiUser apiUser) {
+		setChanged(true);
+
 		user.message(optionalCommentOnLanguageShuffler.get(
 			"You seem like just the sort of idiot that wouldn't believe me if I said I wasn't tsundere.",
 			"What kind of idiot wants a tsundere robot!? That's seriously the dumbest idea I've ever heard.",
@@ -594,12 +614,19 @@ public class Tsundere implements Language {
 
 	@Override
 	public String invalidChoice(String invalid, String choices) {
+		if (choices.contains("[nomod]")) {
+			// recommendation parameter was off
+			if (Math.random() > .5) {
+				return unknownRecommendationParameter();
+			}
+		}
+
 		return "What does \"" + invalid + "\" even mean!? If using two fingers is too much, you could always try singletapping each letter: " + choices + "!";
 	}
 
 	@Override
 	public String setFormat() {
-		/*
+		/* TODO
 		 * User formatted setting options wrong. a message which indicates that
 		 * the correct format is set option value
 		 */
