@@ -25,7 +25,7 @@ public class Tsundere implements Language {
 	
 	@Override
 	public void welcomeUser(IRCBotUser user, OsuApiUser apiUser, long inactiveTime) {
-		String username = apiUser.getUsername();
+		String username = apiUser.getUserName();
 		String greeting = "";
 		//Greetings for <4 minutes, normal, and >4 days
 		if (inactiveTime < 4 * 60 * 1000) {
@@ -172,7 +172,7 @@ public class Tsundere implements Language {
 		recentHugs++;
 		int baseLevel = (int)(Math.log(recentHugs) / Math.log(2.236) + Math.log(recentRecommendations) / Math.log(5)); //Sum logs base sqrt(5) and 5
 		int hugLevel = (baseLevel<8?baseLevel:8) + rnd.nextInt(3) + rnd.nextInt(3) - 2;  //Ranges from -2 to 10
-		String username = apiUser.getUsername();
+		String username = apiUser.getUserName();
 		switch (hugLevel) {
 			default:
 				user.action("completely ignores " + username + "'s request for a hug");
@@ -612,11 +612,18 @@ public class Tsundere implements Language {
 		));
 	}
 
+	int invalidRecommendationParameterCount = 0;
+
 	@Override
 	public String invalidChoice(String invalid, String choices) {
 		if (choices.contains("[nomod]")) {
 			// recommendation parameter was off
-			if (Math.random() > .5) {
+			setChanged(true);
+			/*
+			 * we'll give three fake recommendations and then one proper error
+			 * message. non-randomness required for unit test.
+			 */
+			if (invalidRecommendationParameterCount++ % 4 < 3) {
 				return unknownRecommendationParameter();
 			}
 		}
